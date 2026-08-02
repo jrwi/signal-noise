@@ -19,19 +19,11 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("""
-        CREATE TABLE tracks (
-            spotify_id  TEXT PRIMARY KEY,
-            title       TEXT NOT NULL,
-            artist      TEXT NOT NULL,
-            duration_ms INTEGER NOT NULL CHECK (duration_ms > 0),
-            created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-    """)
-
-    op.execute("""
         CREATE TABLE listening_events (
             id               BIGSERIAL PRIMARY KEY,
-            spotify_track_id TEXT NOT NULL REFERENCES tracks(spotify_id),
+            spotify_track_id TEXT NOT NULL,
+            track_title      TEXT NOT NULL,
+            artist           TEXT NOT NULL,
             played_at        TIMESTAMPTZ NOT NULL,
             ingested_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             UNIQUE (spotify_track_id, played_at)
@@ -43,4 +35,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.execute("DROP TABLE listening_events")
-    op.execute("DROP TABLE tracks")
