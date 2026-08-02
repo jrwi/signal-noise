@@ -2,12 +2,14 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
+    # creating these config values upon the first docker compose
       POSTGRES_DB: signal_noise
       POSTGRES_USER: sn_user
       POSTGRES_PASSWORD: sn_pass
     ports:
       - "5432:5432"
     volumes:
+    # creating a volume named postgres_data which is then mounted on that ":file path"
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "sn_user", "-d", "signal_noise"]
