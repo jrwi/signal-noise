@@ -1,4 +1,6 @@
 services:
+
+#compose file organizes containers, there's no proejct container
   postgres:
     image: postgres:15-alpine
     environment:
@@ -7,6 +9,7 @@ services:
       POSTGRES_USER: sn_user
       POSTGRES_PASSWORD: sn_pass
     ports:
+    # connecting my machine's port 5432 to the Postgres container's port 5432
       - "5432:5432"
     volumes:
     # creating a volume named postgres_data which is then mounted on that ":file path"
