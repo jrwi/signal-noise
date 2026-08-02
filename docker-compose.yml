@@ -1,6 +1,4 @@
 services:
-
-  # ── Relational Database ────────────────────────────────
   postgres:
     image: postgres:15-alpine
     environment:
@@ -18,66 +16,5 @@ services:
       retries: 5
       start_period: 10s
 
-  # ── DynamoDB Local ─────────────────────────────────────
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    platform: linux/amd64
-    ports:
-      - "8000:8000"
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
-
-  # ── Zookeeper (required by Kafka) ──────────────────────
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    platform: linux/amd64
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  # ── Kafka ──────────────────────────────────────────────
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    platform: linux/amd64
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
-
-  # ── LocalStack (fake AWS S3) ───────────────────────────
-  localstack:
-    image: localstack/localstack:3
-    ports:
-      - "4566:4566"
-    environment:
-      SERVICES: s3
-      DEFAULT_REGION: eu-west-1
-    volumes:
-      - localstack_data:/var/lib/localstack
-
-  # ── Prometheus (metrics collection) ───────────────────
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-                      # another example of mounting!
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  # ── Grafana (dashboards) ───────────────────────────────
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    depends_on:
-      - prometheus
-
 volumes:
   postgres_data:
-  localstack_data:

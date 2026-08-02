@@ -14,11 +14,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-from signal_noise_sdk.storage.postgres_client import PostgresConfig
+# Migrations are written explicitly while the Phase 1 schema is small.
 target_metadata = None
 
 # other values from the config, defined by the needs of env.py,

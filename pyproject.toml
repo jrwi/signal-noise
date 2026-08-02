@@ -3,18 +3,14 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "signal-noise-sdk"
+name = "signal-noise"
 version = "0.1.0"
-description = "Internal SDK for the Signal:Noise music platform"
+description = "A learning-first Spotify listening-history data pipeline"
 requires-python = ">=3.12"
 dependencies = [
-    "pydantic>=2.0",
-    "boto3>=1.34",
     "spotipy>=2.25",
     "psycopg2-binary>=2.9",
-    "SQLAlchemy>=2.0",
     "alembic>=1.13",
-    "python-dotenv>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -23,10 +19,5 @@ dev = [
     "ruff>=0.6",
 ]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["signal_noise_sdk*"]
-
 [tool.pytest.ini_options]
-testpaths = ["tests", "signal_noise_sdk"]
-python_files = ["test_*.py"]
+testpaths = ["tests"]

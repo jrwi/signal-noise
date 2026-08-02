@@ -1,4 +1,4 @@
-"""create initial schema
+"""create Spotify listening-history schema
 
 Revision ID: 65110727b95d
 Revises: 
@@ -8,7 +8,6 @@ Create Date: 2026-03-15 19:48:09.849524
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -20,47 +19,28 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("""
-        CREATE TABLE IF NOT EXISTS tracks (
-            id          SERIAL PRIMARY KEY,
-            spotify_id  VARCHAR(50) UNIQUE,
-            title       VARCHAR(500) NOT NULL,
-            artist      VARCHAR(500) NOT NULL,
-            duration_ms INTEGER,
-            source      VARCHAR(50) NOT NULL DEFAULT 'unknown',
-            created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+        CREATE TABLE tracks (
+            spotify_id  TEXT PRIMARY KEY,
+            title       TEXT NOT NULL,
+            artist      TEXT NOT NULL,
+            duration_ms INTEGER NOT NULL CHECK (duration_ms > 0),
+            created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
     """)
 
     op.execute("""
-        CREATE TABLE IF NOT EXISTS playlist_sources (
-            id              SERIAL PRIMARY KEY,
-            spotify_url     VARCHAR(500) NOT NULL UNIQUE,
-            name            VARCHAR(500),
-            last_checked_at TIMESTAMP,
-            created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+        CREATE TABLE listening_events (
+            id               BIGSERIAL PRIMARY KEY,
+            spotify_track_id TEXT NOT NULL REFERENCES tracks(spotify_id),
+            played_at        TIMESTAMPTZ NOT NULL,
+            ingested_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE (spotify_track_id, played_at)
         )
     """)
 
-    op.execute("""
-        CREATE TABLE IF NOT EXISTS queue (
-            id                  SERIAL PRIMARY KEY,
-            track_id            INTEGER NOT NULL REFERENCES tracks(id),
-            source_playlist_id  INTEGER REFERENCES playlist_sources(id),
-            added_at            TIMESTAMP NOT NULL DEFAULT NOW()
-        )
-    """)
-
-    op.execute("""
-        CREATE TABLE IF NOT EXISTS listening_history (
-            id          SERIAL PRIMARY KEY,
-            track_id    INTEGER NOT NULL REFERENCES tracks(id),
-            played_at   TIMESTAMP NOT NULL
-        )
-    """)
+    op.execute("CREATE INDEX listening_events_played_at_idx ON listening_events (played_at)")
 
 
 def downgrade() -> None:
-    op.execute("DROP TABLE IF EXISTS listening_history")
-    op.execute("DROP TABLE IF EXISTS queue")
-    op.execute("DROP TABLE IF EXISTS playlist_sources")
-    op.execute("DROP TABLE IF EXISTS tracks")
+    op.execute("DROP TABLE listening_events")
+    op.execute("DROP TABLE tracks")
