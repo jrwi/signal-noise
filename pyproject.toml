@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signal-noise-sdk"
+version = "0.1.0"
+description = "Internal SDK for the Signal:Noise music platform"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.0",
+    "boto3>=1.34",
+    "requests>=2.31",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["signal_noise_sdk*"]

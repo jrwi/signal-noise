@@ -1,0 +1,30 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.python-version
+*.egg-info/
+dist/
+build/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Environment variables
+.env
+.env.*
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Mac
+.DS_Store
+
+.cache
+
+# Scratch / unrelated
+grailed.text
